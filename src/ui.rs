@@ -8,8 +8,6 @@ use crate::receiver::receive_frames;
 pub struct MyApp {
     operating_mode: Option<String>,
     caster_address: String,
-    receivers: Vec<String>, // Lista degli indirizzi dei receiver
-    receiver_address: String, // Indirizzo locale del receiver
 }
 
 impl Default for MyApp {
@@ -17,8 +15,6 @@ impl Default for MyApp {
         Self {
             operating_mode: None,
             caster_address: "127.0.0.1:8080".to_string(),
-            receivers: vec!["127.0.0.1:9090".to_string()], // Receiver di test
-            receiver_address: "127.0.0.1:9090".to_string(),
         }
     }
 }
@@ -42,14 +38,9 @@ impl eframe::App for MyApp {
                             ui.text_edit_singleline(&mut self.caster_address);
                         });
 
-                        ui.label("Receivers:");
-                        for receiver in &self.receivers {
-                            ui.label(receiver);
-                        }
 
                         if ui.button("Start Casting").clicked() {
                             let caster_address = self.caster_address.clone();
-                            let receivers = self.receivers.clone();
 
                             // Avvia un thread separato per la trasmissione
                             thread::spawn(move || {
@@ -64,13 +55,8 @@ impl eframe::App for MyApp {
                     "receiver" => {
                         // Modalità Receiver
                         ui.label("Receiver Mode");
-                        ui.horizontal(|ui| {
-                            ui.label("Your Address:");
-                            ui.text_edit_singleline(&mut self.receiver_address);
-                        });
 
                         if ui.button("Connect to Caster").clicked() {
-                            let receiver_address = self.receiver_address.clone();
 
                             // Avvia un thread per il receiver
                             thread::spawn(move || {
@@ -79,7 +65,7 @@ impl eframe::App for MyApp {
                                 }
                             });
 
-                            println!("Receiver started at {}", self.receiver_address);
+                            println!("Receiver started");
                         }
                     }
                     _ => {}
